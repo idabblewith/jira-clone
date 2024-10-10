@@ -1,8 +1,12 @@
-"use client";
-
 import { SignInCard } from "@/features/auth/components/sign-in-card";
+import { protectLoggedInUserOnly } from "@/features/auth/actions";
+import { redirect } from "next/navigation";
 
-const SignInPage = () => {
+const SignInPage = async () => {
+	const loggedIn = await protectLoggedInUserOnly();
+	if (loggedIn) {
+		redirect("/");
+	}
 	return <SignInCard />;
 };
 export default SignInPage;

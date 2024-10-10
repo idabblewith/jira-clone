@@ -1,3 +1,5 @@
+"use client";
+
 import { DottedSeparator } from "@/components/dotted-separator";
 import { Button } from "@/components/ui/button";
 import {
@@ -36,7 +38,7 @@ export const SignUpCard = () => {
 		},
 	});
 
-	const { mutate } = useRegister();
+	const { mutate, isPending } = useRegister();
 
 	const onSubmit = (values: z.infer<typeof registerSchema>) => {
 		console.log(values);
@@ -78,6 +80,7 @@ export const SignUpCard = () => {
 											{...field}
 											type="text"
 											placeholder="Enter name"
+											disabled={isPending}
 										/>
 									</FormControl>
 									<FormMessage />
@@ -95,6 +98,7 @@ export const SignUpCard = () => {
 											{...field}
 											type="email"
 											placeholder="Enter email"
+											disabled={isPending}
 										/>
 									</FormControl>
 									<FormMessage />
@@ -112,6 +116,7 @@ export const SignUpCard = () => {
 											{...field}
 											type="password"
 											placeholder="Enter password"
+											disabled={isPending}
 										/>
 									</FormControl>
 									<FormMessage />
@@ -129,11 +134,21 @@ export const SignUpCard = () => {
 				<DottedSeparator />
 			</div>
 			<CardContent className="p-7 flex flex-col gap-y-4">
-				<Button variant={"secondary"} size={"lg"} className="w-full">
+				<Button
+					variant={"secondary"}
+					size={"lg"}
+					className="w-full"
+					disabled={isPending}
+				>
 					<FcGoogle className="mr-2 size-5" />
 					Continue with Google
 				</Button>
-				<Button variant={"secondary"} size={"lg"} className="w-full">
+				<Button
+					variant={"secondary"}
+					size={"lg"}
+					className="w-full"
+					disabled={isPending}
+				>
 					<FaGithub className="mr-2 size-5" />
 					Continue with Github
 				</Button>

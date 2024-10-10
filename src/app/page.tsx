@@ -1,31 +1,17 @@
-"use client";
+import { protectLoggedInUserOnly } from "@/features/auth/actions";
+import { Navitar } from "@/features/auth/components/navitar";
+import { redirect } from "next/navigation";
 
-import { Button } from "@/components/ui/button";
-import { useCurrentUser } from "@/features/auth/api/use-current-user";
-import { useLogout } from "@/features/auth/api/use-logout";
-import { useRouter } from "next/navigation";
-import { useEffect } from "react";
+export default async function Home() {
+	const loggedIn = await protectLoggedInUserOnly();
 
-export default function Home() {
-	const { data, isLoading } = useCurrentUser();
-	const router = useRouter();
-	const { mutate: logout } = useLogout();
-
-	useEffect(() => {
-		if (!data && !isLoading) {
-			router.push("/sign-in");
-		}
-	}, [data]);
-
-	if (isLoading) {
-		return <div>Loading...</div>;
+	if (!loggedIn) {
+		redirect("/sign-in");
 	}
-	if (data) {
-		return (
-			<div>
-				<p>Only visible to authorized users</p>
-				<Button onClick={logout}>Logout</Button>
-			</div>
-		);
-	}
+	return (
+		<div>
+			<p>Only visible to authorized users</p>
+			<Navitar />
+		</div>
+	);
 }
