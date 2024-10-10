@@ -34,7 +34,7 @@ export const SignInCard = () => {
 	const { mutate, isPending } = useLogin();
 
 	const onSubmit = (values: z.infer<typeof loginSchema>) => {
-		console.log(values);
+		// console.log(values);
 		mutate({ json: values });
 	};
 

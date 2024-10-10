@@ -19,7 +19,7 @@ const buttonVariants = cva(
 				outline:
 					"border border-input bg-background shadow-sm hover:bg-accent hover:text-accent-foreground",
 				destructive:
-					"bg-gradient-to-b from-amber-600 to-amber-700 text-destruvtive-foreground hover:from-amber-700 hover:to-amber-700",
+					"bg-gradient-to-b from-amber-600 to-amber-700 text-destruvtive-foreground text-white hover:from-amber-700 hover:to-amber-700",
 			},
 			size: {
 				default: "h-10 px-4 py-2",

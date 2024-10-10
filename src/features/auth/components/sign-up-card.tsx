@@ -41,7 +41,7 @@ export const SignUpCard = () => {
 	const { mutate, isPending } = useRegister();
 
 	const onSubmit = (values: z.infer<typeof registerSchema>) => {
-		console.log(values);
+		// console.log(values);
 		mutate({ json: values });
 	};
 
