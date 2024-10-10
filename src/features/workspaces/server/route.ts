@@ -2,17 +2,41 @@ import { zValidator } from "@hono/zod-validator";
 import { Hono } from "hono";
 import { createWorkspaceSchema } from "../schemas";
 import { sessionMiddleware } from "@/lib/session-middleware";
-import { DATABASE_ID, IMAGES_BUCKET_ID, WORKSPACES_ID } from "@/config";
-import { ID } from "node-appwrite";
+import {
+	DATABASE_ID,
+	IMAGES_BUCKET_ID,
+	MEMBERS_ID,
+	WORKSPACES_ID,
+} from "@/config";
+import { ID, Query } from "node-appwrite";
+import { MemberRole } from "@/features/members/types";
+import { generateInviteCode } from "@/lib/utils";
 
 const app = new Hono()
 	.get("/", sessionMiddleware, async (c) => {
 		const user = c.get("user");
 		const databases = c.get("databases");
 
+		// Get the list of workspaces that the user is a member of
+		const members = await databases.listDocuments(DATABASE_ID, MEMBERS_ID, [
+			Query.equal("userId", user.$id),
+		]);
+
+		// If the user is not a member of any workspace, return an empty array
+		if (members.total === 0) {
+			return c.json({ data: { documents: [], total: 0 } });
+		}
+
+		// Otherwise, get the list of workspaces Ids that the user is a member of
+		const workspaceIds = members.documents.map(
+			(member) => member.workspaceId
+		);
+
+		//
 		const workspaces = await databases.listDocuments(
 			DATABASE_ID,
-			WORKSPACES_ID
+			WORKSPACES_ID,
+			[Query.orderDesc("$createdAt"), Query.contains("$id", workspaceIds)]
 		);
 
 		return c.json({ data: workspaces });
@@ -54,6 +78,18 @@ const app = new Hono()
 					name,
 					userId: user.$id,
 					imageUrl: uploadedImageUrl,
+					inviteCode: generateInviteCode(10),
+				}
+			);
+
+			await databases.createDocument(
+				DATABASE_ID,
+				MEMBERS_ID,
+				ID.unique(),
+				{
+					userId: user.$id,
+					workspaceId: workspace.$id,
+					role: MemberRole.ADMIN,
 				}
 			);
 
