@@ -1,16 +1,9 @@
 import { DottedSeparator } from "@/components/dotted-separator";
 import { Button } from "@/components/ui/button";
-import {
-	Card,
-	CardContent,
-	CardDescription,
-	CardHeader,
-	CardTitle,
-} from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { FcGoogle } from "react-icons/fc";
 import { FaGithub } from "react-icons/fa";
-import Link from "next/link";
 
 import {
 	Form,
@@ -23,41 +16,30 @@ import {
 import { useForm } from "react-hook-form";
 import * as z from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
+import Link from "next/link";
+import { loginSchema } from "../schemas";
+import { useLogin } from "../api/use-login";
 
-const formSchema = z.object({
-	name: z.string().trim().min(1, "Name is required"),
-	email: z.string().email(),
-	password: z.string().min(8, "Minimum of 8 characters required"),
-});
-
-export const SignUpCard = () => {
-	const form = useForm<z.infer<typeof formSchema>>({
-		resolver: zodResolver(formSchema),
+export const SignInCard = () => {
+	const form = useForm<z.infer<typeof loginSchema>>({
+		resolver: zodResolver(loginSchema),
 		defaultValues: {
-			name: "",
 			email: "",
 			password: "",
 		},
 	});
 
-	const onSubmit = (values: z.infer<typeof formSchema>) => {
+	const { mutate } = useLogin();
+
+	const onSubmit = (values: z.infer<typeof loginSchema>) => {
 		console.log(values);
+		mutate({ json: values });
 	};
 
 	return (
 		<Card className="w-full h-full md:w-[487px] border-none shadow-none">
 			<CardHeader className="flex items-center justify-center text-center p-7">
-				<CardTitle className="text-2xl">Sign Up</CardTitle>
-				<CardDescription className="text-balance">
-					By signing up, you agree to our{" "}
-					<Link href="/privacy-policy">
-						<span className="text-blue-700">Privacy Policy</span>
-					</Link>{" "}
-					and{" "}
-					<Link href="/terms">
-						<span className="text-blue-700">Terms of Service</span>
-					</Link>
-				</CardDescription>
+				<CardTitle className="text-2xl">Welcome Back!</CardTitle>
 			</CardHeader>
 			<div className="px-7">
 				<DottedSeparator />
@@ -69,23 +51,6 @@ export const SignUpCard = () => {
 						className="space-y-4"
 						onSubmit={form.handleSubmit(onSubmit)}
 					>
-						<FormField
-							name="name"
-							control={form.control}
-							render={({ field }) => (
-								<FormItem>
-									<FormControl>
-										<Input
-											{...field}
-											type="text"
-											placeholder="Enter name"
-										/>
-									</FormControl>
-									<FormMessage />
-								</FormItem>
-							)}
-						/>
-
 						<FormField
 							name="email"
 							control={form.control}
@@ -144,9 +109,9 @@ export const SignUpCard = () => {
 			</div>
 			<CardContent className="p-7 flex items-center justify-center">
 				<p>
-					Already have an account?{" "}
-					<Link href="/sign-in">
-						<span className="text-blue-700">Sign in</span>
+					Don&apos;t have an account?{" "}
+					<Link href="/sign-up">
+						<span className="text-blue-700">Sign up</span>
 					</Link>
 				</p>
 			</CardContent>
