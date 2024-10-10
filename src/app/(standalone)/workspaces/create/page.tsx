@@ -1,4 +1,4 @@
-import { protectLoggedInUserOnly } from "@/features/auth/actions";
+import { protectLoggedInUserOnly } from "@/features/auth/queries";
 import { CreateWorkspaceForm } from "@/features/workspaces/components/create-workspace-form";
 import { redirect } from "next/navigation";
 
