@@ -1,4 +1,5 @@
 import { protectLoggedInUserOnly } from "@/features/auth/actions";
+import { CreateWorkspaceForm } from "@/features/workspaces/components/create-workspace-form";
 import { redirect } from "next/navigation";
 
 export default async function Home() {
@@ -8,8 +9,8 @@ export default async function Home() {
 		redirect("/sign-in");
 	}
 	return (
-		<div>
-			<p>Only visible to authorized users</p>
+		<div className="bg-muted">
+			<CreateWorkspaceForm />
 		</div>
 	);
 }
