@@ -1,3 +1,4 @@
+import { sessionMiddleware } from "@/lib/session-middleware";
 import { Hono } from "hono";
 import { zValidator } from "@hono/zod-validator";
 import { loginSchema, registerSchema } from "../schemas";
@@ -8,6 +9,11 @@ import { AUTH_COOKIE } from "../constants";
 
 // Immediate chaining of the Hono instance for RPC-style routing
 const app = new Hono()
+	.get("/current", sessionMiddleware, (c) => {
+		const user = c.get("user");
+
+		return c.json({ data: user });
+	})
 	.post("/login", zValidator("json", loginSchema), async (c) => {
 		const { email, password } = c.req.valid("json");
 		const { account } = await createAdminClient();
@@ -28,7 +34,7 @@ const app = new Hono()
 		return c.json({ success: "ok" });
 	})
 	.post("/register", zValidator("json", registerSchema), async (c) => {
-		const { email, password } = c.req.valid("json");
+		const { email, password, name } = c.req.valid("json");
 
 		const { account } = await createAdminClient();
 		await account.create(ID.unique(), email, password, name);
@@ -53,11 +59,11 @@ const app = new Hono()
 
 		return c.json({ success: true });
 	})
-	.post("/logout", async (c) => {
-		// const account = c.get("account");
+	.post("/logout", sessionMiddleware, async (c) => {
+		const account = c.get("account");
 
 		deleteCookie(c, AUTH_COOKIE);
-		// await account.deleteSession("current");
+		await account.deleteSession("current");
 
 		return c.json({ success: true });
 	});
