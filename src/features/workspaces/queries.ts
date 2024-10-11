@@ -7,37 +7,31 @@ import { getMember } from "../members/utils";
 import { Workspace } from "./types";
 
 export const getWorkspaces = async () => {
-	try {
-		const { account, databases } = await createSessionClient();
+	const { account, databases } = await createSessionClient();
 
-		const user = await account.get();
+	const user = await account.get();
 
-		// Get the list of workspaces that the user is a member of
-		const members = await databases.listDocuments(DATABASE_ID, MEMBERS_ID, [
-			Query.equal("userId", user.$id),
-		]);
+	// Get the list of workspaces that the user is a member of
+	const members = await databases.listDocuments(DATABASE_ID, MEMBERS_ID, [
+		Query.equal("userId", user.$id),
+	]);
 
-		// If the user is not a member of any workspace, return an empty array
-		if (members.total === 0) {
-			return { documents: [], total: 0 };
-		}
-
-		// Otherwise, get the list of workspaces Ids that the user is a member of
-		const workspaceIds = members.documents.map(
-			(member) => member.workspaceId
-		);
-
-		//
-		const workspaces = await databases.listDocuments(
-			DATABASE_ID,
-			WORKSPACES_ID,
-			[Query.orderDesc("$createdAt"), Query.contains("$id", workspaceIds)]
-		);
-
-		return workspaces;
-	} catch {
+	// If the user is not a member of any workspace, return an empty array
+	if (members.total === 0) {
 		return { documents: [], total: 0 };
 	}
+
+	// Otherwise, get the list of workspaces Ids that the user is a member of
+	const workspaceIds = members.documents.map((member) => member.workspaceId);
+
+	//
+	const workspaces = await databases.listDocuments(
+		DATABASE_ID,
+		WORKSPACES_ID,
+		[Query.orderDesc("$createdAt"), Query.contains("$id", workspaceIds)]
+	);
+
+	return workspaces;
 };
 
 interface IGetWorkspaceProps {
@@ -45,29 +39,25 @@ interface IGetWorkspaceProps {
 }
 
 export const getWorkspace = async ({ workspaceId }: IGetWorkspaceProps) => {
-	try {
-		const { account, databases } = await createSessionClient();
+	const { account, databases } = await createSessionClient();
 
-		const user = await account.get();
+	const user = await account.get();
 
-		const member = await getMember({
-			databases,
-			userId: user.$id,
-			workspaceId,
-		});
+	const member = await getMember({
+		databases,
+		userId: user.$id,
+		workspaceId,
+	});
 
-		if (!member) {
-			return null;
-		}
-
-		const workspace = await databases.getDocument<Workspace>(
-			DATABASE_ID,
-			WORKSPACES_ID,
-			workspaceId
-		);
-
-		return workspace;
-	} catch {
-		return null;
+	if (!member) {
+		throw new Error("You are not a member of this workspace");
 	}
+
+	const workspace = await databases.getDocument<Workspace>(
+		DATABASE_ID,
+		WORKSPACES_ID,
+		workspaceId
+	);
+
+	return workspace;
 };
