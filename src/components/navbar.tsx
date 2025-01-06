@@ -8,11 +8,11 @@ import MobileSidebar from "./mobile-sidebar";
 
 const pathnameMap = {
 	tasks: {
-		title: "My Tasks",
+		title: "Tasks",
 		description: "View all of your tasks here",
 	},
 	projects: {
-		title: "My Project",
+		title: "Project",
 		description: "View tasks of your project here",
 	},
 };

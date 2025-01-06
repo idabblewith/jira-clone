@@ -1,12 +1,15 @@
 import { protectLoggedInUserOnly } from "@/features/auth/queries";
 import { redirect } from "next/navigation";
+import { WorkspaceIdClient } from "./client";
 
-const WorkSpaceIdPage = async () => {
+const WorkspaceIdPage = async () => {
 	const loggedIn = await protectLoggedInUserOnly();
 
 	if (!loggedIn) {
 		redirect("/sign-in");
 	}
-	return <div>WorkSpaceIdPage</div>;
+
+	return <WorkspaceIdClient />;
 };
-export default WorkSpaceIdPage;
+
+export default WorkspaceIdPage;
